@@ -1,0 +1,69 @@
+module lock_fsm(input [17:0] sw, CLOCK_50, output reg[17:0] LEDR, output reg[17:0] LEDG);
+
+reg [2:0] state, next_state;
+parameter start=0, one=1, two=2, three=3, four=4;
+integer count_1s=0, count=0;
+reg clk_1s;
+
+
+always @(posedge CLOCK_50)
+  begin
+	state<=next_state;
+	count=count+1;
+	if(count==50*1000000/2)
+	    clk_1s=~clk_1s;
+  end
+	    
+always @(state, clk_1s)
+case(state)
+		start: begin
+					LEDR[0]=0;
+					LEDR[1]=0;
+					LEDR[2]=0;
+					LEDR[3]=0;
+					LEDR[4]=0;
+					if(sw[9]==1)
+						next_state=one;
+				 end
+						
+		one:   begin
+					LEDR[0]=1;
+					if(sw[8]==1)
+						next_state=two;
+					else
+					   next_state=start;
+				 end
+						
+						
+						
+		two:   begin
+					LEDR[1]=1;
+					if(sw[7]==1)
+						next_state=three;
+					else
+					   next_state=start;
+				 end
+						
+		three: begin
+					LEDR[2]=1;
+					if(sw[6]==1)
+						next_state=four;
+					else
+					   next_state=start;
+				 end
+			
+		four:  begin
+					LEDR[3]=1;
+					LEDG[0]=1;
+					count_1s=count_1s+1;
+					if(count_1s==10)
+						next_state=start;
+				end
+				
+		default: next_state=start;
+endcase
+
+endmodule
+		
+						
+		

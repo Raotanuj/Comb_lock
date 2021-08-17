@@ -1,0 +1,11 @@
+module fsm(input in,clk, output[4:0] out);
+
+reg state;
+parameter start=0, one=1, two=2, three=3, four=4;
+
+
+
+always @(*)
+begin
+	case(in)
+		
